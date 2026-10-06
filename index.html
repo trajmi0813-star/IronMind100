@@ -330,7 +330,27 @@ const IC_REWARDS=[
 {id:"r7",name:"🎧 Új zene / előfizetés",desc:"Egy kisebb digitális vagy zenei jutalom.",price:850},
 {id:"r8",name:"👟 Sportfelszerelés / cipő",desc:"Komolyabb mérföldkő-jutalom.",price:1000},
 {id:"r9",name:"🎯 Hobbi-est",desc:"Egy teljes este a kedvenc hobbiddal.",price:1400},
-{id:"r10",name:"🏆 100. napi főjutalom",desc:"Nagy személyes jutalom a 100 nap teljesítéséért.",price:2000}
+{id:"r10",name:"🏆 100. napi főjutalom",desc:"Nagy személyes jutalom a 100 nap teljesítéséért.",price:2000},
+{id:"r11",name:"+30 perc alvás",desc:"Adj magadnak még fél órát a regenerációra.",price:100},
+{id:"r12",name:"🚿 Hosszú meleg zuhany",desc:"Nyugodt, hosszabb regeneráló zuhany.",price:100},
+{id:"r13",name:"🎬 Filmest",desc:"Egy teljes film, bűntudat nélkül.",price:150},
+{id:"r14",name:"🎮 1 óra gaming",desc:"Egy óra zavartalan játékidő.",price:150},
+{id:"r15",name:"🎧 1 óra zenehallgatás",desc:"Egy óra kedvenc zenéiddel.",price:100},
+{id:"r16",name:"🌲 1 óra séta",desc:"Egy nyugodt, feltöltő séta.",price:100},
+{id:"r17",name:"📱 30 perc extra telefonidő",desc:"Harminc perc extra szabad telefonhasználat.",price:150},
+{id:"r18",name:"☕ Kedvenc ital",desc:"Egy kedvenc ital, amit most megérdemelsz.",price:100},
+{id:"r19",name:"🍳 Kedvenc reggeli",desc:"A kedvenc reggelid egy teljesített nap után.",price:150},
+{id:"r20",name:"😴 30 perc délutáni pihenő",desc:"Harminc perc teljes pihenés.",price:150},
+{id:"r21",name:"🎣 Horgászás",desc:"Idő a víz mellett, teljes kikapcsolódással.",price:500},
+{id:"r22",name:"📖 1 óra olvasás",desc:"Egy óra nyugodt olvasás.",price:100},
+{id:"r23",name:"🌅 Naplementenézés",desc:"Lassíts le és élvezd a naplementét.",price:100},
+{id:"r24",name:"🧘 30 perc teljes kikapcsolódás",desc:"Harminc perc, amikor semmit sem kell teljesítened.",price:150},
+{id:"r25",name:"🍿 Film + nasi",desc:"Filmnézés egy választott nasival.",price:300},
+{id:"r26",name:"🎮 2 óra gaming",desc:"Két óra zavartalan játékidő.",price:300},
+{id:"r27",name:"🥞 Extra nagy reggeli",desc:"Egy kiadós, extra reggeli jutalomként.",price:250},
+{id:"r28",name:"🌌 Esti csillagnézés",desc:"Nyugodt este a szabad ég alatt.",price:100},
+{id:"r29",name:"🚶 Hosszú, nyugodt séta",desc:"Hosszabb séta teljesen saját tempóban.",price:150},
+{id:"r30",name:"🏆 1 óra teljes szabadidő",desc:"Egy teljes óra, amit teljesen szabadon tölthetsz.",price:400}
 ];
 function freshIC(){return {version:3,balance:0,transactions:[],purchases:[],creditedDays:[],wheelKeys:0,milestoneKeysClaimed:[]}}
 function ensureIC(){if(!data.ironCash||data.ironCash.version!==3){data.ironCash=freshIC();}data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= [];data.ironCash.wheelKeys ||= 0;data.ironCash.milestoneKeysClaimed ||= []}
