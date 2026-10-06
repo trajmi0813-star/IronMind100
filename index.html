@@ -9,7 +9,6 @@
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0c0b">
-<link rel="manifest" href="./manifest.webmanifest">
 <title>IRON MIND – 100 DAYS</title>
 <style>
 :root{
@@ -73,6 +72,10 @@ input:focus,textarea:focus{border-color:#64763c}
 details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right;color:var(--muted)}
 .footer{text-align:center;color:#555d57;font-size:10px;letter-spacing:1px;margin-top:22px}
 @media(min-width:600px){.calendar{grid-template-columns:repeat(10,1fr)}}
+
+.workout-card{background:linear-gradient(180deg,#151a15,#101310);border:1px solid #34402c}
+.workout-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.workout-name{font-size:20px;font-weight:900}.workout-meta{color:var(--muted);font-size:11px;margin-top:4px}.badge{display:inline-block;background:#263019;color:var(--accent2);border:1px solid #4b5d2d;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
+.exercise-list{display:flex;flex-direction:column;gap:7px}.exercise{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:center;padding:10px;border:1px solid var(--line);background:#121612;border-radius:12px}.exercise.done{background:#182015;border-color:#44502c}.exercise input{appearance:none;width:22px;height:22px;border:2px solid #58615a;border-radius:7px;margin:0}.exercise input:checked{background:var(--accent);border-color:var(--accent)}.exercise input:checked:after{content:"✓";display:block;color:#10130e;font-weight:1000;text-align:center;line-height:18px}.exercise-name{font-size:13px;font-weight:800}.exercise-detail{display:block;color:var(--muted);font-size:10px;margin-top:2px}.exercise-value{color:var(--accent2);font-size:11px;font-weight:900;white-space:nowrap}.workout-progress{height:8px;background:#252b26;border-radius:999px;overflow:hidden;margin:12px 0 4px}.workout-progress>div{height:100%;background:var(--accent);width:0%;transition:.2s}.workout-note{color:var(--muted);font-size:10px;line-height:1.4;margin-top:10px}@media(max-width:380px){.exercise{grid-template-columns:26px 1fr}.exercise-value{grid-column:2}.workout-head{display:block}.badge{margin-top:8px}}
 </style>
 </head>
 <body>
@@ -108,6 +111,15 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
       <button class="btn secondary" id="resetDay">Nap visszaállítása</button>
       <button class="btn" id="copyBtn">Napi összesítés másolása</button>
     </div>
+  </div>
+
+
+  <div class="card workout-card">
+    <div class="section-title">🪖 Edzéskövető · 100 napos program</div>
+    <div class="workout-head"><div><div class="workout-name" id="workoutName">—</div><div class="workout-meta" id="workoutMeta">—</div></div><div class="badge" id="workoutPhase">—</div></div>
+    <div class="workout-progress"><div id="workoutProgressBar"></div></div><div class="savehint" id="workoutProgressText">0 / 0 gyakorlat · 0%</div>
+    <div class="exercise-list" id="exerciseList"></div><div class="actions"><button class="btn secondary" id="resetWorkout">Edzés visszaállítása</button></div>
+    <div class="workout-note">Fokozatos terhelésre épül. Ha éles fájdalmat, szédülést vagy rosszullétet érzel, állj meg. A regenerációs nap is a program része.</div>
   </div>
 
   <div class="card">
@@ -198,15 +210,28 @@ const MOTIVATIONS=[
 "A nap végén ne azt kérdezd, könnyű volt-e. Azt, végrehajtottad-e.",
 "Fókusz. Fegyelem. Végrehajtás."
 ];
+
+const WORKOUTS=[
+{name:"ERŐ A · TELJES TEST",type:"strength",ex:[["Guggolás","testsúlyos","8–15 ism."],["Fekvőtámasz","testsúlyos","6–15 ism."],["Hátralépős kitörés","váltott láb","8–12 / láb"],["Farizomemelés","testsúlyos","12–20 ism."],["Plank","törzs","30–60 mp"]]},
+{name:"ÁLLÓKÉPESSÉG · FUTÁS / GYORS SÉTA",type:"cardio",ex:[["Bemelegítő séta / kocogás","nagyon könnyű","5–8 perc"],["Intervallumok","1 perc gyors + 2 perc könnyű","6–10 kör"],["Levezető séta","könnyű","5–10 perc"]]},
+{name:"ERŐ B · TELJES TEST",type:"strength",ex:[["Bolgár guggolás / split squat","váltott láb","8–12 / láb"],["Fekvőtámasz","testsúlyos","6–15 ism."],["Csípőhajlítás / jó reggelt","testsúlyos","10–15 ism."],["Vállérintés plankben","törzs","8–16 / oldal"],["Dead bug","törzs","8–12 / oldal"]]},
+{name:"MOBILITÁS + KARDIÓ",type:"mobility",ex:[["Teljes testes mobilizálás","kontrollált","10 perc"],["Tempós séta / könnyű bicikli","könnyű-közepes","20–30 perc"],["Levezető nyújtás","könnyű","5–10 perc"]]},
+{name:"ERŐ C · TELJES TEST",type:"strength",ex:[["Guggolás","testsúlyos","10–18 ism."],["Pike fekvőtámasz","testsúlyos","6–12 ism."],["Kitörés","váltott láb","8–14 / láb"],["Mountain climber","kontrollált","20–40 ism."],["Oldalsó plank","törzs","20–45 mp / oldal"]]},
+{name:"HOSSZÚ AKTÍV NAP",type:"endurance",ex:[["Tempós séta / túra","egyenletes","45–90 perc"],["Mobilizálás","könnyű","10 perc"]]},
+{name:"REGENERÁCIÓ",type:"recovery",ex:[["Könnyű séta","beszédtempó","20–40 perc"],["Mobilitás","könnyű","10–15 perc"],["Légzés / relaxáció","könnyű","5 perc"]]}
+];
+function workoutForDay(day){const phase=day<=25?1:day<=50?2:day<=75?3:4;const w=JSON.parse(JSON.stringify(WORKOUTS[(day-1)%7]));if(w.type==='strength'){const sets=phase<=2?3:4;w.ex=w.ex.map(([n,d,t])=>[n,d,`${sets} sorozat · ${t}`]);}if(w.type==='cardio')w.ex[1][2]=(phase===1?6:phase===2?8:10)+" kör";return {phase,w};}
+function renderWorkout(d){const {phase,w}=workoutForDay(selected);d.workout ||= {checks:[]};d.workout.checks ||= [];if(d.workout.checks.length!==w.ex.length)d.workout.checks=Array(w.ex.length).fill(false);document.getElementById('workoutName').textContent=w.name;document.getElementById('workoutMeta').textContent=w.type==='strength'?`${phase<=2?3:4} sorozat · kontrollált végrehajtás`:w.type==='recovery'?'Aktív pihenő · nagyon könnyű tempó':'Fokozatos, kontrollált terhelés';document.getElementById('workoutPhase').textContent=phase===1?'NAP 1–25':phase===2?'NAP 26–50':phase===3?'NAP 51–75':'NAP 76–100';const list=document.getElementById('exerciseList');list.innerHTML='';w.ex.forEach((ex,i)=>{const checked=!!d.workout.checks[i];const row=document.createElement('div');row.className='exercise'+(checked?' done':'');row.innerHTML=`<input type="checkbox" ${checked?'checked':''} aria-label="${ex[0]}"><div><div class="exercise-name">${i+1}. ${ex[0]}</div><span class="exercise-detail">${ex[1]}</span></div><div class="exercise-value">${ex[2]}</div>`;row.querySelector('input').onchange=e=>{d.workout.checks[i]=e.target.checked;if(d.workout.checks.every(Boolean))d.tasks[2]=true;save();renderWorkout(d)};list.appendChild(row);});const done=d.workout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);document.getElementById('workoutProgressBar').style.width=p+'%';document.getElementById('workoutProgressText').textContent=`${done} / ${total} gyakorlat · ${p}%`;}
+
 const KEY="iron_mind_100_v1";
 let data=load();
 let selected=clamp(data.selected||1,1,100);
 
-function freshDay(){return {tasks:Array(10).fill(false),journal:"",calories:"",steps:""}}
+function freshDay(){return {tasks:Array(10).fill(false),journal:"",calories:"",steps:"",workout:{checks:[]}}}
 function load(){
  try{
   const d=JSON.parse(localStorage.getItem(KEY));
-  if(d&&d.days){for(let i=1;i<=100;i++)d.days[i] ||= freshDay(); return d}
+  if(d&&d.days){for(let i=1;i<=100;i++){d.days[i] ||= freshDay();d.days[i].workout ||= {checks:[]};} return d}
  }catch(e){}
  const days={}; for(let i=1;i<=100;i++)days[i]=freshDay();
  return {days,selected:1,startDate:null};
@@ -231,7 +256,7 @@ function render(){
  document.getElementById("streak").textContent=streak();
  const allTasks=Object.values(data.days).reduce((a,x)=>a+x.tasks.filter(Boolean).length,0);
  document.getElementById("totalPct").textContent=Math.round(allTasks/1000*100)+"%";
- renderCalendar(); renderTasks(d); renderMilestones(); renderStats(); renderSchedule();
+ renderCalendar(); renderTasks(d); renderWorkout(d); renderMilestones(); renderStats(); renderSchedule();
  document.getElementById("motivation").textContent=MOTIVATIONS[(selected-1)%MOTIVATIONS.length];
  document.getElementById("journal").value=d.journal||"";
  document.getElementById("calories").value=d.calories??"";
@@ -281,6 +306,7 @@ function wire(){
  document.getElementById("calories").oninput=e=>{data.days[selected].calories=e.target.value;save();renderStats()};
  document.getElementById("steps").oninput=e=>{data.days[selected].steps=e.target.value;save();renderStats()};
  document.getElementById("todayBtn").onclick=()=>{selected=1;save();render();window.scrollTo({top:0,behavior:"smooth"})};
+ document.getElementById("resetWorkout").onclick=()=>{if(confirm("Visszaállítod a mai edzést?")){data.days[selected].workout={checks:Array(workoutForDay(selected).w.ex.length).fill(false)};save();renderWorkout(data.days[selected])}};
  document.getElementById("resetDay").onclick=()=>{if(confirm("Visszaállítod ezt a napot?")){data.days[selected]=freshDay();save();render()}};
  document.getElementById("copyBtn").onclick=copySummary;
  document.getElementById("exportBtn").onclick=exportData;
@@ -305,7 +331,6 @@ function importData(e){
  }catch(err){alert("Ez nem érvényes IRON MIND mentés.")}e.target.value=""};r.readAsText(f);
 }
 wire();render();
-if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
 </script>
 </body>
 </html>
