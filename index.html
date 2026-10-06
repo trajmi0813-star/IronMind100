@@ -70,6 +70,8 @@ input:focus,textarea:focus{border-color:#64763c}
 .schedule{display:grid;grid-template-columns:72px 1fr;gap:0;border-top:1px solid var(--line)}
 .slot{display:contents}.slot>div{padding:9px 5px;border-bottom:1px solid var(--line);font-size:12px}.slot .time{color:var(--accent2);font-weight:800}.slot .what{color:#d9ddd8}
 details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right;color:var(--muted)}
+
+.ic-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;display:none;align-items:flex-end;justify-content:center;padding:14px}.ic-modal.open{display:flex}.ic-sheet{width:100%;max-width:760px;max-height:92vh;overflow:auto;background:#0d100e;border:1px solid var(--line);border-radius:22px 22px 14px 14px;box-shadow:0 20px 70px rgba(0,0,0,.5);padding:16px}.ic-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.ic-title{font-size:22px;font-weight:900;letter-spacing:.5px}.ic-sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}.ic-close{width:38px;height:38px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);font-size:20px}.ic-balance{background:linear-gradient(135deg,#182013,#11150f);border:1px solid #46562c;border-radius:16px;padding:16px;margin-bottom:12px}.ic-balance-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1.2px}.ic-balance-value{font-size:34px;font-weight:1000;color:var(--accent2);margin-top:3px}.ic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.ic-mini{background:#131714;border:1px solid var(--line);border-radius:12px;padding:10px}.ic-mini b{display:block;font-size:16px}.ic-mini small{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.7px}.ic-tabs{display:flex;gap:7px;overflow:auto;margin:12px 0}.ic-tab{flex:1;min-width:110px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px;font-weight:800;font-size:11px}.ic-tab.active{background:#202817;border-color:#53652e;color:var(--accent2)}.ic-panel{display:none}.ic-panel.active{display:block}.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shop-item{background:#131714;border:1px solid var(--line);border-radius:14px;padding:12px}.shop-item.owned{border-color:#53652e}.shop-item h4{margin:0 0 5px;font-size:13px}.shop-item p{margin:0 0 10px;color:var(--muted);font-size:10px;line-height:1.35}.shop-price{color:var(--accent2);font-weight:900;font-size:12px;margin-bottom:8px}.shop-item .btn{width:100%;font-size:11px;padding:9px}.ic-list{display:flex;flex-direction:column;gap:7px}.ic-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#131714;border:1px solid var(--line);border-radius:12px;padding:10px}.ic-row-main{min-width:0}.ic-row-title{font-size:12px;font-weight:800}.ic-row-meta{font-size:9px;color:var(--muted);margin-top:2px}.ic-plus{color:var(--accent2);font-weight:900;white-space:nowrap}.ic-minus{color:#ff9f94;font-weight:900;white-space:nowrap}.ic-empty{color:var(--muted);font-size:11px;text-align:center;padding:18px}.ic-admin{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:10px}.ic-admin input{min-width:0}.ic-note{font-size:9px;color:var(--muted);line-height:1.4;margin-top:9px}@media(max-width:420px){.shop-grid{grid-template-columns:1fr}.ic-grid{grid-template-columns:1fr 1fr}}
 .footer{text-align:center;color:#555d57;font-size:10px;letter-spacing:1px;margin-top:22px}
 @media(min-width:600px){.calendar{grid-template-columns:repeat(10,1fr)}}
 
@@ -82,7 +84,7 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
 <div class="app">
   <div class="top">
     <div><div class="brand">IRON MIND</div><div class="sub">100 DAYS · SELF DISCIPLINE PROTOCOL</div></div>
-    <button class="iconbtn" id="todayBtn" title="Mai nap">⌂</button>
+    <button class="iconbtn" id="cartBtn" title="IRON CASH / SHOP" aria-label="IRON CASH és SHOP megnyitása"><span style="font-size:21px">🛒</span></button>
   </div>
 
   <div class="card hero">
@@ -175,6 +177,8 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
     <div class="savehint">Az export egy JSON biztonsági mentés. Érdemes időnként eltenni, mert a böngésző tárhelye nem felhőmentés.</div>
   </div>
 
+
+  <div class="ic-modal" id="icModal" aria-hidden="true"><div class="ic-sheet" role="dialog" aria-modal="true" aria-labelledby="icTitle"><div class="ic-head"><div><div class="ic-title" id="icTitle">🪙 IRON CASH</div><div class="ic-sub">JUTALOMRENDSZER · SHOP · FEJLŐDÉS</div></div><button class="ic-close" id="icClose" aria-label="Bezárás">×</button></div><div class="ic-balance"><div class="ic-balance-label">Elérhető IRON CASH</div><div class="ic-balance-value" id="icBalance">0 IC</div><div class="ic-grid"><div class="ic-mini"><b id="icIncome">0</b><small>összes bevétel</small></div><div class="ic-mini"><b id="icSpent">0</b><small>összes levonás</small></div></div></div><div class="ic-tabs"><button class="ic-tab active" data-ic-tab="shop">🛍️ SHOP</button><button class="ic-tab" data-ic-tab="rewards">🎁 JUTALMAIM</button><button class="ic-tab" data-ic-tab="history">📜 MOZGÁSOK</button></div><div class="ic-panel active" id="icShopPanel"><div class="shop-grid" id="icShop"></div><div class="ic-note">Az IRON CASH automatikusan jár a teljesített napokért. Minden 100%-os nap egyszer jutalmazható.</div></div><div class="ic-panel" id="icRewardsPanel"><div class="ic-list" id="icRewards"></div></div><div class="ic-panel" id="icHistoryPanel"><div class="ic-list" id="icHistory"></div><div class="ic-admin"><input id="icAdjustAmount" type="number" inputmode="numeric" placeholder="IC összeg"><button class="btn secondary" id="icAddBtn">+ Hozzáadás</button></div><div class="ic-admin"><input id="icAdjustReason" type="text" placeholder="Megjegyzés"><button class="btn danger" id="icDeductBtn">− Levonás</button></div></div></div></div>
   <div class="footer">IRON MIND · DISCIPLINE OVER MOOD</div>
 </div>
 
@@ -221,7 +225,30 @@ const WORKOUTS=[
 {name:"REGENERÁCIÓ",type:"recovery",ex:[["Könnyű séta","beszédtempó","20–40 perc"],["Mobilitás","könnyű","10–15 perc"],["Légzés / relaxáció","könnyű","5 perc"]]}
 ];
 function workoutForDay(day){const phase=day<=25?1:day<=50?2:day<=75?3:4;const w=JSON.parse(JSON.stringify(WORKOUTS[(day-1)%7]));if(w.type==='strength'){const sets=phase<=2?3:4;w.ex=w.ex.map(([n,d,t])=>[n,d,`${sets} sorozat · ${t}`]);}if(w.type==='cardio')w.ex[1][2]=(phase===1?6:phase===2?8:10)+" kör";return {phase,w};}
-function renderWorkout(d){const {phase,w}=workoutForDay(selected);d.workout ||= {checks:[]};d.workout.checks ||= [];if(d.workout.checks.length!==w.ex.length)d.workout.checks=Array(w.ex.length).fill(false);document.getElementById('workoutName').textContent=w.name;document.getElementById('workoutMeta').textContent=w.type==='strength'?`${phase<=2?3:4} sorozat · kontrollált végrehajtás`:w.type==='recovery'?'Aktív pihenő · nagyon könnyű tempó':'Fokozatos, kontrollált terhelés';document.getElementById('workoutPhase').textContent=phase===1?'NAP 1–25':phase===2?'NAP 26–50':phase===3?'NAP 51–75':'NAP 76–100';const list=document.getElementById('exerciseList');list.innerHTML='';w.ex.forEach((ex,i)=>{const checked=!!d.workout.checks[i];const row=document.createElement('div');row.className='exercise'+(checked?' done':'');row.innerHTML=`<input type="checkbox" ${checked?'checked':''} aria-label="${ex[0]}"><div><div class="exercise-name">${i+1}. ${ex[0]}</div><span class="exercise-detail">${ex[1]}</span></div><div class="exercise-value">${ex[2]}</div>`;row.querySelector('input').onchange=e=>{d.workout.checks[i]=e.target.checked;if(d.workout.checks.every(Boolean))d.tasks[2]=true;save();renderWorkout(d)};list.appendChild(row);});const done=d.workout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);document.getElementById('workoutProgressBar').style.width=p+'%';document.getElementById('workoutProgressText').textContent=`${done} / ${total} gyakorlat · ${p}%`;}
+function renderWorkout(d){const {phase,w}=workoutForDay(selected);d.tasks ||= Array(10).fill(false);d.workout ||= {checks:[]};d.workout.checks ||= [];if(d.workout.checks.length!==w.ex.length)d.workout.checks=Array(w.ex.length).fill(false);document.getElementById('workoutName').textContent=w.name;document.getElementById('workoutMeta').textContent=w.type==='strength'?`${phase<=2?3:4} sorozat · kontrollált végrehajtás`:w.type==='recovery'?'Aktív pihenő · nagyon könnyű tempó':'Fokozatos, kontrollált terhelés';document.getElementById('workoutPhase').textContent=phase===1?'NAP 1–25':phase===2?'NAP 26–50':phase===3?'NAP 51–75':'NAP 76–100';const list=document.getElementById('exerciseList');list.innerHTML='';w.ex.forEach((ex,i)=>{const checked=!!d.workout.checks[i];const row=document.createElement('div');row.className='exercise'+(checked?' done':'');row.innerHTML=`<input type="checkbox" ${checked?'checked':''} aria-label="${ex[0]}"><div><div class="exercise-name">${i+1}. ${ex[0]}</div><span class="exercise-detail">${ex[1]}</span></div><div class="exercise-value">${ex[2]}</div>`;row.querySelector('input').onchange=e=>{d.workout.checks[i]=e.target.checked;if(d.workout.checks.every(Boolean)){d.tasks ||= Array(10).fill(false);d.tasks[2]=true;}save();renderWorkout(d)};list.appendChild(row);});const done=d.workout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);document.getElementById('workoutProgressBar').style.width=p+'%';document.getElementById('workoutProgressText').textContent=`${done} / ${total} gyakorlat · ${p}%`;}
+
+
+const IC_REWARDS=[
+{id:"r7",name:"🎬 Film / sorozat este",desc:"Egy teljes este, amikor a kikapcsolódás a jutalmad.",price:150},
+{id:"r14",name:"👕 Új edzőpóló",desc:"Egy új darab az IRON MIND felszerelésedhez.",price:300},
+{id:"r25",name:"🔥 Saját kis jutalom",desc:"Válassz valami kisebb dolgot, amit régóta szeretnél.",price:500},
+{id:"r50",name:"👟 Sportfelszerelés / cipő",desc:"Komolyabb mérföldkő-jutalom az 50. nap után.",price:1000},
+{id:"r75",name:"🎮 Teljes hobbi-est",desc:"Egy teljes szabad este a kedvenc hobbiddal.",price:1400},
+{id:"r100",name:"🏆 100. napi főjutalom",desc:"Nagy személyes jutalom: válassz egy neked igazán értékes dolgot.",price:2000}
+];
+function freshIC(){return {balance:0,transactions:[],purchases:[],creditedDays:[]}}
+function ensureIC(){data.ironCash ||= freshIC();data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= []}
+function icTotals(){ensureIC();let income=0,spent=0;data.ironCash.transactions.forEach(t=>{if(t.amount>0)income+=t.amount;else spent+=Math.abs(t.amount)});return {income,spent}}
+function icEarnForCompletedDay(day){ensureIC();if(pct(data.days[day])!==100||data.ironCash.creditedDays.includes(day))return;const amount=day===100?300:day===75?200:day===50?150:day===25?100:day===14?75:day===7?50:25;data.ironCash.balance+=amount;data.ironCash.creditedDays.push(day);data.ironCash.transactions.unshift({amount,reason:"NAP "+day+" teljesítve",date:new Date().toISOString()})}
+function icOpen(){ensureIC();renderIC();const m=document.getElementById("icModal");m.classList.add("open");m.setAttribute("aria-hidden","false")}
+function icClose(){const m=document.getElementById("icModal");m.classList.remove("open");m.setAttribute("aria-hidden","true")}
+function renderIC(){ensureIC();const totals=icTotals();document.getElementById("icBalance").textContent=fmt(data.ironCash.balance)+" IC";document.getElementById("icIncome").textContent=fmt(totals.income)+" IC";document.getElementById("icSpent").textContent=fmt(totals.spent)+" IC";
+const shop=document.getElementById("icShop");shop.innerHTML=IC_REWARDS.map(r=>{const owned=data.ironCash.purchases.includes(r.id);const can=data.ironCash.balance>=r.price&&!owned;return \`<div class="shop-item \${owned?"owned":""}"><h4>\${r.name}</h4><p>\${r.desc}</p><div class="shop-price">\${fmt(r.price)} IC</div><button class="btn \${can?"":"secondary"}" \${can?"":"disabled"} data-buy="\${r.id}">\${owned?"MEGVÁLTVA":can?"BEVÁLTÁS":"NINCS ELÉG IC"}</button></div>\`}).join("");shop.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>icBuy(b.dataset.buy));
+const rewards=document.getElementById("icRewards");const purchases=data.ironCash.purchases.map(id=>IC_REWARDS.find(r=>r.id===id)).filter(Boolean);rewards.innerHTML=purchases.length?purchases.map(r=>\`<div class="ic-row"><div class="ic-row-main"><div class="ic-row-title">\${r.name}</div><div class="ic-row-meta">Beváltva · \${fmt(r.price)} IC</div></div><span class="ic-plus">✓</span></div>\`).join(""):'<div class="ic-empty">Még nincs beváltott jutalmad.</div>';
+const hist=document.getElementById("icHistory");hist.innerHTML=data.ironCash.transactions.length?data.ironCash.transactions.map(t=>\`<div class="ic-row"><div class="ic-row-main"><div class="ic-row-title">\${t.reason}</div><div class="ic-row-meta">\${new Date(t.date).toLocaleDateString("hu-HU")}</div></div><span class="\${t.amount>=0?"ic-plus":"ic-minus"}">\${t.amount>=0?"+":""}\${fmt(t.amount)} IC</span></div>\`).join(""):'<div class="ic-empty">Még nincs tranzakció.</div>';
+}
+function icBuy(id){ensureIC();const r=IC_REWARDS.find(x=>x.id===id);if(!r||data.ironCash.purchases.includes(id)||data.ironCash.balance<r.price)return;if(!confirm(\`\${r.name} beváltása \${fmt(r.price)} IC-ért?\`))return;data.ironCash.balance-=r.price;data.ironCash.purchases.push(id);data.ironCash.transactions.unshift({amount:-r.price,reason:"Jutalom beváltva: "+r.name,date:new Date().toISOString()});save();renderIC()}
+function icAdjust(sign){ensureIC();const amount=Math.floor(Number(document.getElementById("icAdjustAmount").value));const reason=document.getElementById("icAdjustReason").value.trim()||"Kézi IRON CASH módosítás";if(!amount)return;if(sign<0&&data.ironCash.balance<amount){alert("Nincs ennyi IRON CASH az egyenlegen.");return}data.ironCash.balance+=sign*amount;data.ironCash.transactions.unshift({amount:sign*amount,reason,date:new Date().toISOString()});save();document.getElementById("icAdjustAmount").value="";document.getElementById("icAdjustReason").value="";renderIC()}
 
 const KEY="iron_mind_100_v1";
 let data=load();
@@ -231,10 +258,10 @@ function freshDay(){return {tasks:Array(10).fill(false),journal:"",calories:"",s
 function load(){
  try{
   const d=JSON.parse(localStorage.getItem(KEY));
-  if(d&&d.days){for(let i=1;i<=100;i++){d.days[i] ||= freshDay();d.days[i].workout ||= {checks:[]};} return d}
+  if(d&&d.days){for(let i=1;i<=100;i++){d.days[i] ||= freshDay();d.days[i].tasks ||= Array(10).fill(false);d.days[i].workout ||= {checks:[]};}d.ironCash ||= freshIC();return d}
  }catch(e){}
  const days={}; for(let i=1;i<=100;i++)days[i]=freshDay();
- return {days,selected:1,startDate:null};
+ return {days,selected:1,startDate:null,ironCash:freshIC()};
 }
 function save(){data.selected=selected;localStorage.setItem(KEY,JSON.stringify(data))}
 function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
@@ -247,6 +274,9 @@ function streak(){
 }
 function fmt(n){return Number(n).toLocaleString("hu-HU")}
 function render(){
+ ensureIC();
+ for(let i=1;i<=100;i++)icEarnForCompletedDay(i);
+ save();
  const d=data.days[selected], p=pct(d);
  document.getElementById("dayTitle").textContent="NAP "+selected;
  document.getElementById("dayDate").textContent=dayDate(selected);
@@ -305,7 +335,12 @@ function wire(){
  document.getElementById("journal").oninput=e=>{data.days[selected].journal=e.target.value;save()};
  document.getElementById("calories").oninput=e=>{data.days[selected].calories=e.target.value;save();renderStats()};
  document.getElementById("steps").oninput=e=>{data.days[selected].steps=e.target.value;save();renderStats()};
- document.getElementById("todayBtn").onclick=()=>{selected=1;save();render();window.scrollTo({top:0,behavior:"smooth"})};
+ document.getElementById("cartBtn").onclick=icOpen;
+ document.getElementById("icClose").onclick=icClose;
+ document.getElementById("icModal").onclick=e=>{if(e.target.id==="icModal")icClose()};
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")icClose()});
+ document.querySelectorAll(".ic-tab").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".ic-tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".ic-panel").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.getElementById("ic"+btn.dataset.icTab.charAt(0).toUpperCase()+btn.dataset.icTab.slice(1)+"Panel").classList.add("active")});
+ document.getElementById("icAddBtn").onclick=()=>icAdjust(1);document.getElementById("icDeductBtn").onclick=()=>icAdjust(-1);
  document.getElementById("resetWorkout").onclick=()=>{if(confirm("Visszaállítod a mai edzést?")){data.days[selected].workout={checks:Array(workoutForDay(selected).w.ex.length).fill(false)};save();renderWorkout(data.days[selected])}};
  document.getElementById("resetDay").onclick=()=>{if(confirm("Visszaállítod ezt a napot?")){data.days[selected]=freshDay();save();render()}};
  document.getElementById("copyBtn").onclick=copySummary;
@@ -327,7 +362,7 @@ function importData(e){
  const f=e.target.files[0];if(!f)return;
  const r=new FileReader();r.onload=()=>{try{
   const x=JSON.parse(r.result);if(!x.days)throw 0;
-  data=x;for(let i=1;i<=100;i++)data.days[i] ||= freshDay();selected=clamp(data.selected||1,1,100);save();render();alert("Importálás kész.");
+  data=x;for(let i=1;i<=100;i++){data.days[i] ||= freshDay();data.days[i].tasks ||= Array(10).fill(false);data.days[i].workout ||= {checks:[]}}ensureIC();selected=clamp(data.selected||1,1,100);save();render();alert("Importálás kész.");
  }catch(err){alert("Ez nem érvényes IRON MIND mentés.")}e.target.value=""};r.readAsText(f);
 }
 wire();render();
