@@ -78,6 +78,7 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
 @media(min-width:600px){.calendar{grid-template-columns:repeat(10,1fr)}}
 
 .workout-card{background:linear-gradient(180deg,#151a15,#101310);border:1px solid #34402c}
+.morning-card{background:linear-gradient(180deg,#131813,#101310);border:1px solid #39432f}.morning-badge{color:var(--accent2);font-size:10px;font-weight:900}.exercise-info{grid-column:2/-1;margin-top:4px}.exercise-info summary{cursor:pointer;color:var(--accent2);font-size:10px;font-weight:900;list-style:none}.exercise-info summary::-webkit-details-marker{display:none}.exercise-info summary:before{content:"▸ ";}.exercise-info[open] summary:before{content:"▾ ";}.exercise-guide{color:var(--muted);font-size:10px;line-height:1.45;margin-top:7px;padding:8px;border-left:2px solid #4b5d2d;background:#0e120e;border-radius:6px}
 .workout-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}.workout-name{font-size:20px;font-weight:900}.workout-meta{color:var(--muted);font-size:11px;margin-top:4px}.badge{display:inline-block;background:#263019;color:var(--accent2);border:1px solid #4b5d2d;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
 .exercise-list{display:flex;flex-direction:column;gap:7px}.exercise{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:center;padding:10px;border:1px solid var(--line);background:#121612;border-radius:12px}.exercise.done{background:#182015;border-color:#44502c}.exercise input{appearance:none;width:22px;height:22px;border:2px solid #58615a;border-radius:7px;margin:0}.exercise input:checked{background:var(--accent);border-color:var(--accent)}.exercise input:checked:after{content:"✓";display:block;color:#10130e;font-weight:1000;text-align:center;line-height:18px}.exercise-name{font-size:13px;font-weight:800}.exercise-detail{display:block;color:var(--muted);font-size:10px;margin-top:2px}.exercise-value{color:var(--accent2);font-size:11px;font-weight:900;white-space:nowrap}.workout-progress{height:8px;background:#252b26;border-radius:999px;overflow:hidden;margin:12px 0 4px}.workout-progress>div{height:100%;background:var(--accent);width:0%;transition:.2s}.workout-note{color:var(--muted);font-size:10px;line-height:1.4;margin-top:10px}@media(max-width:380px){.exercise{grid-template-columns:26px 1fr}.exercise-value{grid-column:2}.workout-head{display:block}.badge{margin-top:8px}}
 </style>
@@ -118,8 +119,16 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
   </div>
 
 
+  <div class="card workout-card morning-card">
+    <div class="section-title">🌅 Reggeli torna · külön program</div>
+    <div class="workout-head"><div><div class="workout-name" id="morningName">—</div><div class="workout-meta" id="morningMeta">—</div></div><div class="badge morning-badge" id="morningPhase">—</div></div>
+    <div class="workout-progress"><div id="morningProgressBar"></div></div><div class="savehint" id="morningProgressText">0 / 0 gyakorlat · 0%</div>
+    <div class="exercise-list" id="morningExerciseList"></div><div class="actions"><button class="btn secondary" id="resetMorning">Reggeli torna visszaállítása</button></div>
+    <div class="workout-note">Kb. 10–15 perc. Ez nem a fő edzés: reggeli aktiválás és állóképességi terhelés. Fokozatosan nehezedik a 100 nap alatt.</div>
+  </div>
+
   <div class="card workout-card">
-    <div class="section-title">🪖 Edzéskövető · 100 napos program</div>
+    <div class="section-title">🪖 Fő edzés · 100 napos program</div>
     <div class="workout-head"><div><div class="workout-name" id="workoutName">—</div><div class="workout-meta" id="workoutMeta">—</div></div><div class="badge" id="workoutPhase">—</div></div>
     <div class="workout-progress"><div id="workoutProgressBar"></div></div><div class="savehint" id="workoutProgressText">0 / 0 gyakorlat · 0%</div>
     <div class="exercise-list" id="exerciseList"></div><div class="actions"><button class="btn secondary" id="resetWorkout">Edzés visszaállítása</button></div>
@@ -218,18 +227,98 @@ const MOTIVATIONS=[
 "Fókusz. Fegyelem. Végrehajtás."
 ];
 
-const WORKOUTS=[
-{name:"ERŐ A · TELJES TEST",type:"strength",ex:[["Guggolás","testsúlyos","8–15 ism."],["Fekvőtámasz","testsúlyos","6–15 ism."],["Hátralépős kitörés","váltott láb","8–12 / láb"],["Farizomemelés","testsúlyos","12–20 ism."],["Plank","törzs","30–60 mp"]]},
-{name:"ÁLLÓKÉPESSÉG · FUTÁS / GYORS SÉTA",type:"cardio",ex:[["Bemelegítő séta / kocogás","nagyon könnyű","5–8 perc"],["Intervallumok","1 perc gyors + 2 perc könnyű","6–10 kör"],["Levezető séta","könnyű","5–10 perc"]]},
-{name:"ERŐ B · TELJES TEST",type:"strength",ex:[["Bolgár guggolás / split squat","váltott láb","8–12 / láb"],["Fekvőtámasz","testsúlyos","6–15 ism."],["Csípőhajlítás / jó reggelt","testsúlyos","10–15 ism."],["Vállérintés plankben","törzs","8–16 / oldal"],["Dead bug","törzs","8–12 / oldal"]]},
-{name:"MOBILITÁS + KARDIÓ",type:"mobility",ex:[["Teljes testes mobilizálás","kontrollált","10 perc"],["Tempós séta / könnyű bicikli","könnyű-közepes","20–30 perc"],["Levezető nyújtás","könnyű","5–10 perc"]]},
-{name:"ERŐ C · TELJES TEST",type:"strength",ex:[["Guggolás","testsúlyos","10–18 ism."],["Pike fekvőtámasz","testsúlyos","6–12 ism."],["Kitörés","váltott láb","8–14 / láb"],["Mountain climber","kontrollált","20–40 ism."],["Oldalsó plank","törzs","20–45 mp / oldal"]]},
-{name:"HOSSZÚ AKTÍV NAP",type:"endurance",ex:[["Tempós séta / túra","egyenletes","45–90 perc"],["Mobilizálás","könnyű","10 perc"]]},
-{name:"REGENERÁCIÓ",type:"recovery",ex:[["Könnyű séta","beszédtempó","20–40 perc"],["Mobilitás","könnyű","10–15 perc"],["Légzés / relaxáció","könnyű","5 perc"]]}
+const MAIN_WORKOUTS=[
+{name:"MELL + TRICEPSZ",type:"strength",ex:[["Fekvőtámasz","testsúlyos","3×8–15","Törzs feszes, mellkas közelít a talajhoz, könyök kb. 30–45°-ban a test mellett."],["Szűk fekvőtámasz","testsúlyos","3×6–12","A kezek közelebb vannak egymáshoz, a könyök maradjon kontrolláltan a törzs mellett."],["Tricepsz fekvőtámasz térdelve","testsúlyos","3×8–15","A könyök hátrafelé mozogjon, ne essen szét oldalra; lassú leengedés."],["Plank vállérintéssel","törzs","3×16–24 érintés","Csípő maradjon minél stabilabb, ne billegj oldalra."]]},
+{name:"LÁB + FARIZOM",type:"strength",ex:[["Guggolás","testsúlyos","3×12–20","Talp teljesen lent, térd a lábfej irányába halad, csípő kontrolláltan süllyed."],["Hátralépős kitörés","váltott láb","3×8–12 / láb","Lépj hátra, ereszkedj függőlegesen, majd az első lábbal told vissza magad."],["Csípőemelés","testsúlyos","3×15–25","Farizomból emelj, felül feszíts rá, ne homoríts túl."],["Vádliemelés","testsúlyos","3×15–25","Lassan emelkedj lábujjra és kontrolláltan engedd vissza."]]},
+{name:"HÁT + BICEPSZ",type:"strength",ex:[["Superman húzás","testsúlyos","3×10–15","Hasalva emeld enyhén a mellkast és húzd a könyököt a bordák felé, nyakat tartsd semlegesen."],["Fordított hóangyal","testsúlyos","3×10–15","Hasalva lassan vezesd a karokat ívben a csípő felé, lapockával dolgozz."],["Izometrikus törölközőhúzás","törölköző","3×20–30 mp","A két véget ellentétes irányba húzd, vállad maradjon lent; ne rángasd."],["Madár-kutya","törzs","3×8–12 / oldal","Ellentétes kar-láb nyújtás, medence maradjon stabil."]]},
+{name:"VÁLL + TÖRZS",type:"strength",ex:[["Pike fekvőtámasz","testsúlyos","3×6–12","Csípő magas, fej a talaj felé halad, vállból nyomj vissza."],["Oldalsó plank","törzs","3×20–45 mp / oldal","Test egyenes vonalban, csípőt ne engedd beesni."],["Dead bug","törzs","3×8–12 / oldal","Derék maradjon kontrolláltan a talaj közelében, lassan nyújts."],["Hegymászó","kontrollált","3×20–40","Váll a kéz fölött, térdek váltva jönnek előre, törzs stabil."]]},
+{name:"KONDÍCIÓ + TELJES TEST",type:"conditioning",ex:[["Burpee","testsúlyos","3×6–12","Guggolásba ereszkedj, lépj vagy ugorj hátra, majd kontrolláltan állj fel."],["Guggolásból felugrás","testsúlyos","3×8–15","Lágyan érkezz, térdek a lábfej irányába nézzenek."],["Fekvőtámasz","testsúlyos","3×8–15","Törzs egyenes, teljes mozgástartomány csak fájdalommentesen."],["Mountain climber","testsúlyos","3×30–45 mp","Törzs stabil, ritmusos váltás, ne essen be a derék."]]},
+{name:"TELJES TEST · ERŐÁLLÓSÁG",type:"strength",ex:[["Guggolás","testsúlyos","3×15–20","Kontrollált süllyedés, erős felállás, térd a lábfej vonalában."],["Fekvőtámasz","testsúlyos","3×10–15","Mellkas és csípő együtt mozog, ne homoríts."],["Bolgár guggolás","testsúlyos","3×8–12 / láb","Hátsó láb támaszon, első lábbal dolgozz, térd stabil."],["Plank","törzs","3×40–60 mp","Farizom és has feszes, légzés folyamatos."]]},
+{name:"REGENERÁCIÓ",type:"recovery",ex:[["Könnyű séta","könnyű","20–40 perc","Beszédtempóban mozogj, cél a keringés átmozgatása."],["Mobilitás","könnyű","10–15 perc","Fájdalommentes tartományban, rángatás nélkül mozgasd át az ízületeket."],["Légzés / relaxáció","könnyű","5 perc","Lassú, kényelmes légzés, vállak lazán."]]}
 ];
-function workoutForDay(day){const phase=day<=25?1:day<=50?2:day<=75?3:4;const w=JSON.parse(JSON.stringify(WORKOUTS[(day-1)%7]));if(w.type==='strength'){const sets=phase<=2?3:4;w.ex=w.ex.map(([n,d,t])=>[n,d,`${sets} sorozat · ${t}`]);}if(w.type==='cardio')w.ex[1][2]=(phase===1?6:phase===2?8:10)+" kör";return {phase,w};}
-function renderWorkout(d){const {phase,w}=workoutForDay(selected);d.tasks ||= Array(10).fill(false);d.workout ||= {checks:[]};d.workout.checks ||= [];if(d.workout.checks.length!==w.ex.length)d.workout.checks=Array(w.ex.length).fill(false);document.getElementById('workoutName').textContent=w.name;document.getElementById('workoutMeta').textContent=w.type==='strength'?`${phase<=2?3:4} sorozat · kontrollált végrehajtás`:w.type==='recovery'?'Aktív pihenő · nagyon könnyű tempó':'Fokozatos, kontrollált terhelés';document.getElementById('workoutPhase').textContent=phase===1?'NAP 1–25':phase===2?'NAP 26–50':phase===3?'NAP 51–75':'NAP 76–100';const list=document.getElementById('exerciseList');list.innerHTML='';w.ex.forEach((ex,i)=>{const checked=!!d.workout.checks[i];const row=document.createElement('div');row.className='exercise'+(checked?' done':'');row.innerHTML=`<input type="checkbox" ${checked?'checked':''} aria-label="${ex[0]}"><div><div class="exercise-name">${i+1}. ${ex[0]}</div><span class="exercise-detail">${ex[1]}</span></div><div class="exercise-value">${ex[2]}</div>`;row.querySelector('input').onchange=e=>{d.workout.checks[i]=e.target.checked;if(d.workout.checks.every(Boolean)){d.tasks ||= Array(10).fill(false);d.tasks[2]=true;}save();renderWorkout(d)};list.appendChild(row);});const done=d.workout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);document.getElementById('workoutProgressBar').style.width=p+'%';document.getElementById('workoutProgressText').textContent=`${done} / ${total} gyakorlat · ${p}%`;}
 
+const MAIN_PHASES=[
+{label:"NAP 1–25 · ALAPOZÁS",sets:3,weighted:false},
+{label:"NAP 26–50 · INTENZÍV",sets:4,weighted:false},
+{label:"NAP 51–75 · SÚLYZÓ + SAJÁT TESTSÚLY",sets:4,weighted:true},
+{label:"NAP 76–100 · ERŐSÚLYZÓS SZAKASZ",sets:4,weighted:"only"}
+];
+
+const WEIGHTED_WORKOUTS=[
+{name:"MELL + TRICEPSZ · SÚLYZÓ",type:"strength",ex:[["Fekvenyomás kézi súlyzóval","súlyzó","4×8–12","Lapocka stabil, láb a talajon, súlyt kontrolláltan engedd le a mellkas mellé."],["Ferde pados nyomás kézi súlyzóval","súlyzó","4×8–12","A súlyzók egyenletesen mozognak, vállat ne húzd fel."],["Kalapácsos tricepsznyújtás","súlyzó","4×10–14","Könyök maradjon közel a fejhez, csak az alkar mozogjon."],["Oldalemelés","súlyzó","4×12–15","Kis súly, kontrollált emelés vállmagasságig."]]},
+{name:"LÁB + FARIZOM · SÚLYZÓ",type:"strength",ex:[["Goblet guggolás","súlyzó","4×8–12","Súlyt a mellkas előtt tartva guggolj, törzs feszes."],["Román felhúzás","súlyzó","4×8–12","Csípőt told hátra, hát semleges, súly a láb közelében mozog."],["Bolgár guggolás súllyal","súlyzó","4×8–12 / láb","A terhelés az első lábon marad, kontrolláltan süllyedj."],["Vádliemelés súllyal","súlyzó","4×12–20","Teljes, kontrollált mozgástartomány, ne pattogj."]]},
+{name:"HÁT + BICEPSZ · SÚLYZÓ",type:"strength",ex:[["Evezés kézi súlyzóval","súlyzó","4×8–12","Hát semleges, könyök hátra és a csípő felé húz."],["Egykezes evezés","súlyzó","4×8–12 / oldal","Váll ne forduljon ki, húzd a súlyt a csípő irányába."],["Bicepsz curl","súlyzó","4×10–14","Könyök maradjon a törzs mellett, ne lendületből emelj."],["Kalapács curl","súlyzó","4×10–14","Semleges fogás, kontrollált fel-le mozgás."]]},
+{name:"VÁLL + TÖRZS · SÚLYZÓ",type:"strength",ex:[["Vállból nyomás","súlyzó","4×8–12","Törzs feszes, súlyzókat kontrolláltan nyomd fej fölé."],["Oldalemelés","súlyzó","4×12–15","Kis súly és lassú végrehajtás; ne rángasd."],["Farmer séta","súlyzó","4×30–45 mp","Magas mellkas, stabil törzs, egyenletes lépések."],["Súlyzós dead bug","súlyzó","4×8–10 / oldal","Könnyű súly, derék kontrollált, lassú mozgás."]]},
+{name:"TELJES TEST · SÚLYZÓS ERŐ",type:"strength",ex:[["Guggolás súllyal","súlyzó","4×8–12","Törzs feszes, térd stabil, kontrollált mélység."],["Fekvenyomás kézi súlyzóval","súlyzó","4×8–12","Lapocka stabil, súlyt kontrolláltan engedd le."],["Román felhúzás","súlyzó","4×8–12","Csípőből hajolj, hát semleges, ne görbülj össze."],["Evezés kézi súlyzóval","súlyzó","4×8–12","Könyök hátra, lapockák kontrolláltan közelednek."]]},
+{name:"ERŐ + KONDÍCIÓ · SÚLYZÓ",type:"strength",ex:[["Kitörés súllyal","súlyzó","4×8–12 / láb","Törzs stabil, első lábbal told vissza magad."],["Push press könnyű súllyal","súlyzó","4×8–10","Enyhe térdhajlításból segíts rá, majd kontrolláltan engedd vissza."],["Farmer séta","súlyzó","4×40–60 mp","Fogás erős, váll lent, törzs egyenes."],["Plank súlyzóhúzással","súlyzó","4×8–12 / oldal","Csípő maradjon stabil, súlyt lassan húzd át."]]},
+{name:"REGENERÁCIÓ",type:"recovery",ex:[["Könnyű séta","könnyű","20–40 perc","Beszédtempóban mozogj, cél a regeneráció."],["Mobilitás","könnyű","10–15 perc","Fájdalommentes tartományban mozogj, rángatás nélkül."],["Légzés","könnyű","5 perc","Nyugodt, lassú légzés."]]}
+];
+
+const MORNING_WORKOUTS=[
+{name:"AKTIVÁLÁS A",ex:[["Helyben menet","bemelegítés","60 mp","Törzs egyenes, karok dolgoznak, fokozatosan emeld a tempót."],["Guggolás","testsúlyos","15 ism.","Talp lent, térd a lábfej irányába, kontrollált mozgás."],["Fekvőtámasz","testsúlyos","8–12 ism.","Törzs egyenes, könyök kontrolláltan hátra."],["Mountain climber","testsúlyos","30 mp","Stabil törzs, váltott térdhúzás."],["Plank","törzs","30 mp","Has és farizom feszes, derék semleges."]]},
+{name:"AKTIVÁLÁS B",ex:[["Jumping jack","kardió","45 mp","Lágy érkezés, ritmusos kar-láb mozgás."],["Hátralépős kitörés","testsúlyos","8–10 / láb","Lépj hátra, kontrolláltan ereszkedj."],["Pike vállérintés","törzs/váll","10 / oldal","Csípő magas, törzs stabil, ne forgasd túl a medencét."],["Guggolásból térdemelés","kardió","12 / oldal","Állj fel erősen, térdet kontrolláltan emeld."],["Dead bug","törzs","8 / oldal","Derék stabil, lassú ellentétes kar-láb nyújtás."]]},
+{name:"AKTIVÁLÁS C",ex:[["Gyors helyben séta","kardió","60 mp","Karokkal segíts, fokozatosan gyorsíts."],["Kitörés váltva","testsúlyos","10 / láb","Térd stabil, törzs egyenes."],["Fekvőtámasz térdelve vagy normál","testsúlyos","10–15","Válassz kontrollált variációt."],["Mountain climber","kardió","40 mp","Ne essen be a derék."],["Oldalsó plank","törzs","20 mp / oldal","Csípő maradjon megemelve."]]},
+{name:"AKTIVÁLÁS D",ex:[["Burpee lépéses","kardió","8 ism.","Ugrás helyett lépéssel is végezhető, kontrolláltan."],["Guggolás","testsúlyos","20 ism.","Térd stabil, ritmusos mozgás."],["Pike fekvőtámasz","váll","6–10","Fej a talaj felé, vállból nyomj."],["Hegymászó","kardió","45 mp","Törzs stabil, egyenletes ritmus."],["Plank","törzs","40 mp","Folyamatos légzés, feszes törzs."]]}
+];
+
+function phaseForDay(day){return day<=25?1:day<=50?2:day<=75?3:4}
+function workoutForDay(day){
+ const phase=phaseForDay(day), p=MAIN_PHASES[phase-1];
+ const base=phase>=3?WEIGHTED_WORKOUTS:MAIN_WORKOUTS;
+ const w=JSON.parse(JSON.stringify(base[(day-1)%base.length]));
+ if(w.type==="strength")w.ex=w.ex.map(([n,d,t,g])=>[n,d,t.replace(/^\\d+×/,(p.sets)+"×"),g]);
+ if(phase===2&&w.type==="strength")w.ex=w.ex.map(([n,d,t,g])=>[n,d,t.replace(/^4×/,"4×"),g+"  ·  lassú leengedés és rövid pihenő."]);
+ if(phase===2&&w.type==="conditioning")w.ex=w.ex.map(([n,d,t,g])=>[n,d,t,g+"  ·  rövidebb pihenőkkel."]);
+ return {phase,w};
+}
+function morningForDay(day){
+ const phase=phaseForDay(day), idx=(day-1)%MORNING_WORKOUTS.length;
+ const w=JSON.parse(JSON.stringify(MORNING_WORKOUTS[idx]));
+ const multiplier=phase===1?1:phase===2?1.15:phase===3?1.3:1.45;
+ w.ex=w.ex.map(([n,d,t,g])=>{
+  let value=t;
+  if(/\d+ ism/.test(t)&&phase>1)value=t.replace(/\d+/,m=>Math.round(parseInt(m)*multiplier));
+  if(/\d+ mp/.test(t)&&phase>1)value=t.replace(/\d+/,m=>Math.round(parseInt(m)*multiplier));
+  return [n,d,value,g];
+ });
+ return {phase,w};
+}
+function renderExerciseRows(list,w,checks,onChange){
+ list.innerHTML="";
+ w.ex.forEach((ex,i)=>{
+  const checked=!!checks[i], row=document.createElement("div");
+  row.className="exercise"+(checked?" done":"");
+  row.innerHTML=`<input type="checkbox" ${checked?"checked":""} aria-label="${ex[0]}"><div><div class="exercise-name">${i+1}. ${ex[0]}</div><span class="exercise-detail">${ex[1]}</span></div><div class="exercise-value">${ex[2]}</div><details class="exercise-info"><summary>Helyes végrehajtás</summary><div class="exercise-guide">${ex[3]}</div></details>`;
+  row.querySelector("input").onchange=e=>{checks[i]=e.target.checked;onChange()};
+  list.appendChild(row);
+ });
+}
+function renderWorkout(d){
+ const {phase,w}=workoutForDay(selected);
+ d.tasks ||= Array(10).fill(false); d.workout ||= {checks:[]}; d.workout.checks ||= [];
+ if(d.workout.checks.length!==w.ex.length)d.workout.checks=Array(w.ex.length).fill(false);
+ document.getElementById("workoutName").textContent=w.name;
+ document.getElementById("workoutMeta").textContent=phase===1?"3 sorozat · alapozás":phase===2?"4 sorozat · intenzívebb tempó":phase===3?"4 sorozat · súlyzó + saját testsúly":"4 sorozat · súlyzós erőszakasz";
+ document.getElementById("workoutPhase").textContent=MAIN_PHASES[phase-1].label;
+ const list=document.getElementById("exerciseList");
+ const refresh=()=>{if(d.workout.checks.every(Boolean)){d.tasks[2]=true}save();renderWorkout(d)};
+ renderExerciseRows(list,w,d.workout.checks,refresh);
+ const done=d.workout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);
+ document.getElementById("workoutProgressBar").style.width=p+"%";document.getElementById("workoutProgressText").textContent=`${done} / ${total} gyakorlat · ${p}%`;
+}
+function renderMorning(d){
+ const {phase,w}=morningForDay(selected);
+ d.morningWorkout ||= {checks:[]}; d.morningWorkout.checks ||= [];
+ if(d.morningWorkout.checks.length!==w.ex.length)d.morningWorkout.checks=Array(w.ex.length).fill(false);
+ document.getElementById("morningName").textContent=w.name;
+ document.getElementById("morningMeta").textContent=phase===1?"10–12 perc · alapozás":phase===2?"12–14 perc · emelt terhelés":phase===3?"12–15 perc · keményebb reggeli torna":"14–15 perc · végső szint";
+ document.getElementById("morningPhase").textContent=MAIN_PHASES[phase-1].label;
+ const list=document.getElementById("morningExerciseList");
+ const refresh=()=>{save();renderMorning(d)};
+ renderExerciseRows(list,w,d.morningWorkout.checks,refresh);
+ const done=d.morningWorkout.checks.filter(Boolean).length,total=w.ex.length,p=Math.round(done/total*100);
+ document.getElementById("morningProgressBar").style.width=p+"%";document.getElementById("morningProgressText").textContent=`${done} / ${total} gyakorlat · ${p}%`;
+}
 
 const IC_REWARDS=[
 {id:"r1",name:"🎬 Film / sorozat este",desc:"Egy teljes este, amikor a kikapcsolódás a jutalmad.",price:150},
@@ -267,7 +356,7 @@ const KEY="iron_mind_100_v1";
 let data=load();
 let selected=clamp(data.selected||1,1,100);
 
-function freshDay(){return {tasks:Array(10).fill(false),journal:"",calories:"",steps:"",workout:{checks:[]}}}
+function freshDay(){return {tasks:Array(10).fill(false),journal:"",calories:"",steps:"",workout:{checks:[]},morningWorkout:{checks:[]}}}
 function load(){
  try{
   const d=JSON.parse(localStorage.getItem(KEY));
@@ -299,7 +388,7 @@ function render(){
  document.getElementById("streak").textContent=streak();
  const allTasks=Object.values(data.days).reduce((a,x)=>a+x.tasks.filter(Boolean).length,0);
  document.getElementById("totalPct").textContent=Math.round(allTasks/1000*100)+"%";
- renderCalendar(); renderTasks(d); renderWorkout(d); renderMilestones(); renderStats(); renderSchedule();
+ renderCalendar(); renderTasks(d); renderMorning(d); renderWorkout(d); renderMilestones(); renderStats(); renderSchedule();
  document.getElementById("motivation").textContent=MOTIVATIONS[(selected-1)%MOTIVATIONS.length];
  document.getElementById("journal").value=d.journal||"";
  document.getElementById("calories").value=d.calories??"";
@@ -357,7 +446,8 @@ function wire(){
  document.addEventListener("keydown",e=>{if(e.key==="Escape")icClose()});
  document.querySelectorAll(".ic-tab").forEach(btn=>btn.onclick=()=>{document.querySelectorAll(".ic-tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".ic-panel").forEach(x=>x.classList.remove("active"));btn.classList.add("active");document.getElementById("ic"+btn.dataset.icTab.charAt(0).toUpperCase()+btn.dataset.icTab.slice(1)+"Panel").classList.add("active")});
  document.getElementById("wheelBtn").onclick=wheelOpen;
- document.getElementById("resetWorkout").onclick=()=>{if(confirm("Visszaállítod a mai edzést?")){data.days[selected].workout={checks:Array(workoutForDay(selected).w.ex.length).fill(false)};save();renderWorkout(data.days[selected])}};
+ document.getElementById("resetWorkout").onclick=()=>{if(confirm("Visszaállítod a mai fő edzést?")){data.days[selected].workout={checks:Array(workoutForDay(selected).w.ex.length).fill(false)};save();renderWorkout(data.days[selected])}};
+document.getElementById("resetMorning").onclick=()=>{if(confirm("Visszaállítod a mai reggeli tornát?")){data.days[selected].morningWorkout={checks:Array(morningForDay(selected).w.ex.length).fill(false)};save();renderMorning(data.days[selected])}};
  document.getElementById("resetDay").onclick=()=>{if(confirm("Visszaállítod ezt a napot?")){data.days[selected]=freshDay();save();render()}};
  document.getElementById("copyBtn").onclick=copySummary;
  document.getElementById("exportBtn").onclick=exportData;
@@ -378,7 +468,7 @@ function importData(e){
  const f=e.target.files[0];if(!f)return;
  const r=new FileReader();r.onload=()=>{try{
   const x=JSON.parse(r.result);if(!x.days)throw 0;
-  data=x;for(let i=1;i<=100;i++){data.days[i] ||= freshDay();data.days[i].tasks ||= Array(10).fill(false);data.days[i].workout ||= {checks:[]}}ensureIC();selected=clamp(data.selected||1,1,100);save();render();alert("Importálás kész.");
+  data=x;for(let i=1;i<=100;i++){data.days[i] ||= freshDay();data.days[i].tasks ||= Array(10).fill(false);data.days[i].workout ||= {checks:[]};data.days[i].morningWorkout ||= {checks:[]}}ensureIC();selected=clamp(data.selected||1,1,100);save();render();alert("Importálás kész.");
  }catch(err){alert("Ez nem érvényes IRON MIND mentés.")}e.target.value=""};r.readAsText(f);
 }
 wire();render();
