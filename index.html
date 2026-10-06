@@ -244,7 +244,7 @@ const IC_REWARDS=[
 {id:"r10",name:"🏆 100. napi főjutalom",desc:"Nagy személyes jutalom a 100 nap teljesítéséért.",price:2000}
 ];
 function freshIC(){return {version:2,balance:0,transactions:[],purchases:[],creditedDays:[]}}
-function ensureIC(){if(!data.ironCash||data.ironCash.version!==2){data.ironCash=freshIC();}data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= []}
+function ensureIC(){if(!data.ironCash||data.ironCash.version!==2){data.ironCash=freshIC();data.ironCash.creditedDays=Object.keys(data.days||{}).filter(k=>Number(k)>=1&&Number(k)<=100&&pct(data.days[k])===100).map(Number)}data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= []}
 function icTotals(){ensureIC();let income=0,spent=0;data.ironCash.transactions.forEach(t=>{if(t.amount>0)income+=t.amount;else spent+=Math.abs(t.amount)});return {income,spent}}
 function icEarnForCompletedDay(day){ensureIC();if(pct(data.days[day])!==100||data.ironCash.creditedDays.includes(day))return;const amount=day===100?300:day===75?200:day===50?150:day===25?100:day===14?75:day===7?50:25;data.ironCash.balance+=amount;data.ironCash.creditedDays.push(day);data.ironCash.transactions.unshift({amount,reason:"NAP "+day+" teljesítve",date:new Date().toISOString()})}
 function icOpen(){ensureIC();renderIC();const m=document.getElementById("icModal");m.classList.add("open");m.setAttribute("aria-hidden","false")}
