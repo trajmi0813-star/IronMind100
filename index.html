@@ -182,7 +182,7 @@ details summary{cursor:pointer;list-style:none;font-weight:800}.chev{float:right
 
   <div class="ic-modal" id="icModal" aria-hidden="true"><div class="ic-sheet" role="dialog" aria-modal="true" aria-labelledby="icTitle"><div class="ic-head"><div><div class="ic-title" id="icTitle">🪙 IRON CASH</div><div class="ic-sub">JUTALOMRENDSZER · SHOP · FEJLŐDÉS</div></div><button class="ic-close" id="icClose" aria-label="Bezárás">×</button></div><div class="ic-balance"><div class="ic-balance-label">Elérhető IRON CASH</div><div class="ic-balance-value" id="icBalance">0 IC</div><div class="ic-grid"><div class="ic-mini"><b id="icIncome">0</b><small>összes bevétel</small></div><div class="ic-mini"><b id="icSpent">0</b><small>összes levonás</small></div></div></div><div class="ic-tabs"><button class="ic-tab active" data-ic-tab="shop">🛍️ SHOP</button><button class="ic-tab" data-ic-tab="rewards">🎁 JUTALMAIM</button><button class="ic-tab" data-ic-tab="history">📜 MOZGÁSOK</button></div><div class="ic-panel active" id="icShopPanel"><div class="shop-grid" id="icShop"></div><div class="ic-note">Az IRON CASH kizárólag teljesített napokból szerezhető. Kézi IC-hozzáadás nincs.</div></div><div class="ic-panel" id="icRewardsPanel"><div class="ic-list" id="icRewards"></div></div><div class="ic-panel" id="icHistoryPanel"><div class="ic-list" id="icHistory"></div></div></div></div>
 
-  <div class="wheel-modal" id="wheelModal" aria-hidden="true"><div class="wheel-sheet"><div class="wheel-title">🎡 SZERENCSEKERÉK</div><div class="wheel-note">Napi 1 pörgetés · jutalom vagy bónusz IC</div><div class="wheel-pointer">▼</div><div class="wheel" id="wheel"></div><div class="wheel-result" id="wheelResult">Nyomd meg a PÖRGETÉS gombot.</div><div class="actions" style="justify-content:center"><button class="btn" id="spinBtn">PÖRGETÉS</button><button class="btn secondary" id="wheelClose">BEZÁRÁS</button></div></div></div>  <div class="footer">IRON MIND · DISCIPLINE OVER MOOD</div>
+  <div class="wheel-modal" id="wheelModal" aria-hidden="true"><div class="wheel-sheet"><div class="wheel-title">🎡 SZERENCSEKERÉK</div><div class="wheel-note">🔑 Kulcsos rendszer · a kulcsokat mérföldköveknél kapod</div><div id="wheelKeys" style="color:var(--accent2);font-weight:900;margin-top:7px">0 🔑</div><div class="wheel-pointer">▼</div><div class="wheel" id="wheel"></div><div class="wheel-result" id="wheelResult">Nyomd meg a PÖRGETÉS gombot.</div><div class="actions" style="justify-content:center"><button class="btn" id="spinBtn">PÖRGETÉS</button><button class="btn secondary" id="wheelClose">BEZÁRÁS</button></div></div></div>  <div class="footer">IRON MIND · DISCIPLINE OVER MOOD</div>
 </div>
 
 <script>
@@ -243,8 +243,8 @@ const IC_REWARDS=[
 {id:"r9",name:"🎯 Hobbi-est",desc:"Egy teljes este a kedvenc hobbiddal.",price:1400},
 {id:"r10",name:"🏆 100. napi főjutalom",desc:"Nagy személyes jutalom a 100 nap teljesítéséért.",price:2000}
 ];
-function freshIC(){return {version:2,balance:0,transactions:[],purchases:[],creditedDays:[]}}
-function ensureIC(){if(!data.ironCash||data.ironCash.version!==2){data.ironCash=freshIC();data.ironCash.creditedDays=Object.keys(data.days||{}).filter(k=>Number(k)>=1&&Number(k)<=100&&pct(data.days[k])===100).map(Number)}data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= []}
+function freshIC(){return {version:3,balance:0,transactions:[],purchases:[],creditedDays:[],wheelKeys:0,milestoneKeysClaimed:[]}}
+function ensureIC(){if(!data.ironCash||data.ironCash.version!==3){data.ironCash=freshIC();}data.ironCash.transactions ||= [];data.ironCash.purchases ||= [];data.ironCash.creditedDays ||= [];data.ironCash.wheelKeys ||= 0;data.ironCash.milestoneKeysClaimed ||= []}
 function icTotals(){ensureIC();let income=0,spent=0;data.ironCash.transactions.forEach(t=>{if(t.amount>0)income+=t.amount;else spent+=Math.abs(t.amount)});return {income,spent}}
 function icEarnForCompletedDay(day){ensureIC();if(pct(data.days[day])!==100||data.ironCash.creditedDays.includes(day))return;const amount=day===100?300:day===75?200:day===50?150:day===25?100:day===14?75:day===7?50:25;data.ironCash.balance+=amount;data.ironCash.creditedDays.push(day);data.ironCash.transactions.unshift({amount,reason:"NAP "+day+" teljesítve",date:new Date().toISOString()})}
 function icOpen(){ensureIC();renderIC();const m=document.getElementById("icModal");m.classList.add("open");m.setAttribute("aria-hidden","false")}
@@ -257,8 +257,9 @@ const hist=document.getElementById("icHistory");hist.innerHTML=data.ironCash.tra
 
 function wheelOpen(){const m=document.getElementById("wheelModal");m.classList.add("open");m.setAttribute("aria-hidden","false");wheelRender()}
 function wheelClose(){const m=document.getElementById("wheelModal");m.classList.remove("open");m.setAttribute("aria-hidden","true")}
-function wheelRender(){const key=new Date().toISOString().slice(0,10);const used=data.ironCash.wheelDate===key;document.getElementById("spinBtn").disabled=used;document.getElementById("wheelResult").textContent=used?"A mai pörgetést már felhasználtad.":"Nyomd meg a PÖRGETÉS gombot."}
-function spinWheel(){ensureIC();const key=new Date().toISOString().slice(0,10);if(data.ironCash.wheelDate===key)return;const prizes=[25,50,75,100,150,200,0,300];const i=Math.floor(Math.random()*prizes.length),amount=prizes[i];const turns=5+Math.random()*2;document.getElementById("wheel").style.transform=`rotate(${turns*360+i*45}deg)`;setTimeout(()=>{data.ironCash.wheelDate=key;if(amount>0){data.ironCash.balance+=amount;data.ironCash.transactions.unshift({amount,reason:"Szerencsekerék",date:new Date().toISOString()});document.getElementById("wheelResult").textContent="🎉 +"+fmt(amount)+" IC";}else{document.getElementById("wheelResult").textContent="Ma nem nyertél IC-t. Holnap újra próbálkozhatsz."}save();renderIC();wheelRender()},3100)}
+const WHEEL_PRIZES=["🚿 Meleg zuhany","🛏️ Ágyban alvás","🎣 Horgászat","🎬 Filmest","🎮 Gaming-est","🥞 Kedvenc reggeli","🌲 Hosszú séta / kirándulás","📱 Teljes digitális szabad este"];
+function wheelRender(){ensureIC();const keys=data.ironCash.wheelKeys||0;document.getElementById("spinBtn").disabled=keys<=0;document.getElementById("wheelResult").textContent=keys>0?"🔑 Van "+keys+" Szerencsekerék-kulcsod. Pörgesd meg!":"🔒 Nincs Szerencsekerék-kulcsod. A kulcsokat a mérföldköveknél kapod.";document.getElementById("wheelKeys").textContent=keys+" 🔑";}
+function spinWheel(){ensureIC();if((data.ironCash.wheelKeys||0)<=0)return;const i=Math.floor(Math.random()*WHEEL_PRIZES.length),prize=WHEEL_PRIZES[i];const turns=5+Math.random()*2;document.getElementById("wheel").style.transform=`rotate(${turns*360+i*45}deg)`;data.ironCash.wheelKeys--;setTimeout(()=>{data.ironCash.transactions.unshift({amount:0,reason:"Szerencsekerék: "+prize,date:new Date().toISOString()});save();document.getElementById("wheelResult").textContent="🎉 NYERTÉL: "+prize;renderIC();wheelRender()},3100)}
 function icBuy(id){ensureIC();const r=IC_REWARDS.find(x=>x.id===id);if(!r||data.ironCash.purchases.includes(id)||data.ironCash.balance<r.price)return;if(!confirm(`${r.name} beváltása ${fmt(r.price)} IC-ért?`))return;data.ironCash.balance-=r.price;data.ironCash.purchases.push(id);data.ironCash.transactions.unshift({amount:-r.price,reason:"Jutalom beváltva: "+r.name,date:new Date().toISOString()});save();renderIC()}
 
 
@@ -329,10 +330,13 @@ function renderTasks(d){
 function renderMilestones(){
  const c=document.getElementById("milestones");c.innerHTML="";
  [10,25,50,75,100].forEach(n=>{
-  const reached=completedDays()>=n; const x=document.createElement("div");x.className="mile"+(reached?" reached":"");
-  x.innerHTML=`<b>${n}</b>${reached?"TELJESÍTVE":"mérföldkő"}`;c.appendChild(x);
+  const reached=completedDays()>=n; const claimed=data.ironCash.milestoneKeysClaimed?.includes(n); const x=document.createElement("div");x.className="mile"+(reached?" reached":"");
+  x.innerHTML=`<b>${n}</b>${claimed?"🔑 KULCS":"mérföldkő"}`;
+  if(reached&&!claimed){x.style.cursor="pointer";x.title="Kattints a Szerencsekerék-kulcs átvételéhez";x.onclick=()=>claimMilestoneKey(n);}
+  c.appendChild(x);
  });
 }
+function claimMilestoneKey(n){ensureIC();if(completedDays()<n||data.ironCash.milestoneKeysClaimed.includes(n))return;data.ironCash.milestoneKeysClaimed.push(n);data.ironCash.wheelKeys++;data.ironCash.transactions.unshift({amount:0,reason:"Mérföldkő-kulcs: "+n+". nap",date:new Date().toISOString()});save();render();wheelRender();alert("🔑 Szerencsekerék-kulcs megszerezve!");}
 function renderStats(){
  const vals=Object.values(data.days).map(d=>Number(d.calories)).filter(n=>n>0);
  const steps=Object.values(data.days).map(d=>Number(d.steps)).filter(n=>n>0);
