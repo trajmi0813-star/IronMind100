@@ -62,7 +62,7 @@ input:focus,textarea:focus{border-color:#64763c}
 .calday{min-height:62px;min-width:0;background:#131714;border:1px solid var(--line);border-radius:11px;padding:7px;text-align:left}
 .calday .n{font-weight:900}.calday .pct{font-size:10px;color:var(--muted);margin-top:4px}
 .calday.active{border-color:var(--accent);box-shadow:0 0 0 1px rgba(183,211,75,.2)}
-.calday.done{background:#182015}.calday.done .pct{color:var(--accent2)}
+.calday.done{background:#182015}.calday.done .pct{color:var(--accent2)}.calday.locked{opacity:.48;filter:saturate(.35);cursor:not-allowed}.calday.locked:after{content:"🔒";display:block;font-size:13px;margin-top:3px}
 .milestones{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
 .mile{padding:10px 5px;text-align:center;border:1px solid var(--line);border-radius:12px;background:#121512;color:var(--muted);font-size:11px}
 .mile b{display:block;font-size:17px;color:var(--text)}.mile.reached{border-color:#5c7032;color:var(--accent2);background:#171d12}
@@ -399,19 +399,25 @@ function dayDate(day){
  const x=new Date(data.startDate+"T12:00:00"); x.setDate(x.getDate()+day-1);
  return x.toLocaleDateString("hu-HU",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
 }
+function isDayUnlocked(day){return day===1||pct(data.days[day-1])===100}
 function renderCalendar(){
  const c=document.getElementById("calendar"); c.innerHTML="";
  for(let i=1;i<=100;i++){
-  const b=document.createElement("button"); b.className="calday"+(i===selected?" active ":"")+(pct(data.days[i])===100?" done":"");
+  const unlocked=isDayUnlocked(i), done=pct(data.days[i])===100;
+  const b=document.createElement("button");
+  b.className="calday"+(i===selected?" active ":"")+(done?" done":"")+(unlocked?"":" locked");
+  b.disabled=!unlocked;
   b.innerHTML=`<div class="n">${i}</div><div class="pct">${pct(data.days[i])}%</div>`;
-  b.onclick=()=>{selected=i;save();render();window.scrollTo({top:0,behavior:"smooth"})}; c.appendChild(b);
+  if(unlocked)b.onclick=()=>{selected=i;save();render();window.scrollTo({top:0,behavior:"smooth"})};
+  c.appendChild(b);
  }
 }
 function renderTasks(d){
  const c=document.getElementById("tasks");c.innerHTML="";
+ const unlocked=isDayUnlocked(selected);
  TASKS.forEach((t,i)=>{
   const row=document.createElement("div");row.className="task"+(d.tasks[i]?" done":"");
-  row.innerHTML=`<input type="checkbox" ${d.tasks[i]?"checked":""} aria-label="${t}"><label>${i+1}. ${t}</label>`;
+  row.innerHTML=`<input type="checkbox" ${d.tasks[i]?"checked":""} ${unlocked?"":"disabled"} aria-label="${t}"><label>${i+1}. ${t}</label>`;
   row.querySelector("input").onchange=e=>{d.tasks[i]=e.target.checked;save();render()};
   c.appendChild(row);
  });
