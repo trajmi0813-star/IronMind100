@@ -1,0 +1,9 @@
+{
+  "name": "IRON MIND – 100 DAYS",
+  "short_name": "IRON MIND",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#090b0a",
+  "theme_color": "#0a0c0b",
+  "lang": "hu"
+}
